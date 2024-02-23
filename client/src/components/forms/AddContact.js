@@ -2,14 +2,14 @@ import { useEffect, useState } from "react";
 import { v4 as uuidv4 } from "uuid";
 import { Button, Form, Input, Select } from "antd";
 import { useMutation } from "@apollo/client";
-import { ADD_CONTACT, GET_CONTACTS } from "../../graphql/queries";
+import { ADD_PERSON, GET_CONTACTS } from "../../graphql/queries";
 
 const AddContact = () => {
   const [id] = useState(uuidv4());
   const [form] = Form.useForm();
   const [, forceUpdate] = useState();
 
-  const [addContact] = useMutation(ADD_CONTACT);
+  const [addPerson] = useMutation(ADD_PERSON);
 
   useEffect(() => {
     forceUpdate({});
@@ -18,27 +18,27 @@ const AddContact = () => {
   const onFinish = (values) => {
     const { firstName, lastName } = values;
 
-    addContact({
+    addPerson({
       variables: {
         id,
         firstName,
         lastName,
       },
-      update: (cache, { data: { addContact } }) => {
+      update: (cache, { data: { addPerson } }) => {
         const data = cache.readQuery({ query: GET_CONTACTS });
-
+        console.log('data',data)
         cache.writeQuery({
           query: GET_CONTACTS,
           data: {
             ...data,
-            contacts: [...data.contacts, addContact],
+            people: [...data.people, addPerson],
           },
         });
       },
     });
   };
 
-  return (
+   return  (
     <Form
       name="add-contact-form"
       layout="inline"

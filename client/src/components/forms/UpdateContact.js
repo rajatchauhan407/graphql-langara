@@ -8,18 +8,19 @@ const UpdateContact = props => {
   const [form] = Form.useForm()
   const [, forceUpdate] = useState()
 
-  const [updateContact] = useMutation(UPDATE_CONTACT)
+  const [updatePerson] = useMutation(UPDATE_CONTACT)
 
   const onFinish = values => {
     const { firstName, lastName } = values
 
-    updateContact({
+    updatePerson({
       variables: {
         id,
         firstName,
         lastName
       }
     })
+    console.log('values', values)
     props.onButtonClick()
   }
 
@@ -52,10 +53,10 @@ const UpdateContact = props => {
             form={form}
             type='primary'
             htmlType='submit'
-            disabled={
-              (!form.isFieldTouched('firstName') && !form.isFieldTouched('lastName')) ||
-              form.getFieldsError().filter(({ errors }) => errors.length).length
-            }
+            // disabled={
+            //   (!form.isFieldTouched('firstName') && !form.isFieldTouched('lastName')) ||
+            //   form.getFieldsError().filter(({ errors }) => errors.length).length
+            // }
           >
             Update Contact
           </Button>

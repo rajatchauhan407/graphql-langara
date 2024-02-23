@@ -1,64 +1,50 @@
 import { useState,useEffect } from 'react';
-import { useQuery } from '@apollo/client';
-import { GET_CONTACTS,ADD_CAR, GET_CARS } from '../../graphql/queries';
-import { Button, Form, Input, Select} from 'antd';
+// import { useQuery } from '@apollo/client';
+// import { GET_CONTACTS } from '../../graphql/queries';
+import { Button, Form, Input} from 'antd';
 import { useMutation } from '@apollo/client';
-import { v4 as uuidv4 } from "uuid";
-const AddCar = () => {
-  const [id] = useState(uuidv4());
-    const {loading, error, data} = useQuery(GET_CONTACTS);
+import { UPDATE_CAR} from '../../graphql/queries';
+const UpdateCar = (props) => {
+    const {id, year,make, model, price} = props
+    // const {loading, error, data} = useQuery(GET_CONTACTS);
     const [form] = Form.useForm();
     const [, forceUpdate] = useState();
+    const [updateCar] = useMutation(UPDATE_CAR);
+    console.log('id',id);
+    const onFinish = (values) => {
+        console.log('Success:', values);
+        const {year, make, model, price} = values;
+        console.log(values);
+        updateCar({
+          variables: {
+            id:id,
+            year:year,
+            make:make,
+            model:model,
+            price:price
+          }
+        });
+        props.onButtonClick();
+      }
 
     useEffect(() => {
       forceUpdate({});
     }, []);
-    const [addCar] = useMutation(ADD_CAR);
 
-    const onFinish = (values) => {
-      console.log('Success:', values);
-
-      const { year, make, model, price, personId } = values;
-      addCar({
-        variables: {
-          id,
-          year,
-          make,
-          model,
-          price,
-          personId
-        },
-        update: (cache, { data: { addCar } }) => {
-          // let data;
-          const data = cache.readQuery({ query: GET_CARS, variables: { personId: personId }}              );
-          console.log('data',data)
-          
-            cache.writeQuery({
-              query: GET_CARS,
-              variables: { personId: personId },
-              data: {
-                ...data.getCarsByPersonId,
-                getCarsByPersonId: [...data.getCarsByPersonId, addCar],
-              },
-            });
-          
-          console.log('cars',data)
-          forceUpdate({});
-          // try{
-          // }catch(e){
-          //   data={  cars: []}
-          // }
-        },
-      });
-    }
-    if (loading) return 'Loading...';
-    if (error) return `Error! ${error.message}`;
+    // if (loading) return 'Loading...';
+    // if (error) return `Error! ${error.message}`;
     return (
         <Form
             name='add-car-form'
             layout='inline'
             size='large'
             style={{ marginBottom: '40px' }}
+            initialValues={{
+                year,
+                make,
+                model,
+                price
+            }}
             onFinish={onFinish}
         >
         <Form.Item
@@ -66,6 +52,7 @@ const AddCar = () => {
             rules={[{ required: true, message: 'Please enter an year' }]}
             style={{ marginBottom: '20px' }}
             label='Year'
+            
         >
             <Input placeholder='i.e. 2020' />
         </Form.Item>
@@ -91,19 +78,21 @@ const AddCar = () => {
             >
             <Input placeholder='i.e. 25000' />
         </Form.Item>
-        <Form.Item
+        {/* <Form.Item
         name="personId"
         rules={[{ required: true, message: 'Please select a person ID' }]}
         label="Person ID"
       >
         <Select placeholder="Select a person ID">
-        {data.people.map(({ id, firstName, lastName}) => (<Select.Option value={id}>{firstName+ ' '+ lastName}</Select.Option>))}
+        <Select.Option value={id}></Select.Option>
+          
           
         </Select>
-      </Form.Item>
+      </Form.Item> */}
         <Form.Item shouldUpdate={true}>
         {() => (
           <Button
+          form={form}
             type='primary'
             htmlType='submit'
             disabled={
@@ -111,12 +100,18 @@ const AddCar = () => {
               form.getFieldsError().filter(({ errors }) => errors.length).length
             }
           >
-            Add Car
+            Update Car
           </Button>
+          
         )}
+        </Form.Item>
+        <Form.Item
+             style={{ marginTop: '20px' }}
+        >
+            <Button onClick={props.onButtonClick}>Cancel</Button>
         </Form.Item>
         </Form>
     )
 }
 
-export default AddCar;
+export default UpdateCar;

@@ -6,7 +6,7 @@ import http from 'http'
 import cors from 'cors'
 import bodyParser from 'body-parser'
 
-import { typeDefs, resolvers } from './src/schema.js'
+import { typeDefs, resolvers } from './src/peopleCarsSchema.js'
 
 const startApolloServer = async (typeDefs, resolvers) => {
   const app = express()

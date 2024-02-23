@@ -15,7 +15,7 @@ const Contacts = () => {
 
   return (
     <List grid={{ gutter: 20, column: 1 }} style={styles.list}>
-      {data.contacts.map(({ id, firstName, lastName }) => (
+      {data.people.map(({ id, firstName, lastName }) => (
         <List.Item key={id}>
           <ContactCard id={id} firstName={firstName} lastName={lastName} />
         </List.Item>
